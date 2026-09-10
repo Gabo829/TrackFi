@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f4f1ea" />
+    <title>TrackFi | Control financiero</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="CSS/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand"><span class="brand-mark">T</span><span>TrackFi</span></div>
+        <nav class="side-nav" aria-label="Navegación principal">
+          <a class="nav-item active" href="#resumen"><span class="nav-icon">◒</span> Resumen</a>
+          <a class="nav-item" href="#movimientos"><span class="nav-icon">↔</span> Movimientos</a>
+          <a class="nav-item" href="#analisis"><span class="nav-icon">◫</span> Análisis</a>
+        </nav>
+        <div class="sidebar-bottom">
+          <div class="tip-card"><span class="tip-dot"></span><strong>Pequeños pasos.</strong><p>Revisar tus números también es avanzar.</p></div>
+          <button class="side-action" id="exportBtn"><span>↓</span> Exportar datos</button>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <div class="mobile-brand"><span class="brand-mark">T</span><span>TrackFi</span></div>
+          <div class="topbar-actions"><span class="current-date" id="todayLabel"></span><button class="avatar" aria-label="Perfil">GF</button></div>
+        </header>
+
+        <div class="content-wrap">
+          <section class="view active" id="resumen">
+          <div class="welcome-row">
+            <div><p class="eyebrow">TU ESPACIO FINANCIERO</p><h1>Hola, Gabriel<span>.</span></h1><p class="muted">Esto es lo que está pasando con tu dinero.</p></div>
+          </div>
+
+          <section class="metrics-grid" aria-label="Resumen financiero">
+            <article class="metric-card balance-card"><div class="metric-top"><span>Balance total</span><span class="metric-icon">◉</span></div><strong id="balanceValue">$0</strong><p id="balanceNote">Tu balance acumulado</p></article>
+            <article class="metric-card income-card"><div class="metric-top"><span>Ingresos</span><span class="metric-icon">↗</span></div><strong id="incomeValue">$0</strong><p>Entradas registradas</p></article>
+            <article class="metric-card loss-card"><div class="metric-top"><span>Pérdidas</span><span class="metric-icon">↘</span></div><strong id="lossValue">$0</strong><p>Salidas registradas</p></article>
+          </section>
+          <section class="summary-insights" aria-label="Lectura rápida">
+            <article class="insight-card"><span class="insight-label">LECTURA RÁPIDA</span><strong id="summaryMessage">Tu balance está creciendo.</strong><p id="summaryDetail">Cada movimiento cuenta para tener una visión más clara.</p></article>
+            <article class="insight-card"><span class="insight-label">ÚLTIMO MOVIMIENTO</span><strong id="lastMovement">Sin movimientos</strong><p id="lastMovementDetail">Añade tu primer registro para verlo aquí.</p></article>
+            <article class="insight-card progress-card"><div class="insight-label-row"><span class="insight-label">DINERO DISPONIBLE</span><strong id="availablePercent">0%</strong></div><div class="progress-track"><span id="availableProgress"></span></div><p>Porcentaje de ingresos que queda después de las pérdidas.</p></article>
+          </section>
+          </section>
+
+          <section class="view" id="analisis">
+            <div class="page-heading"><p class="eyebrow">ANÁLISIS</p><h1>Movimiento de dinero<span>.</span></h1><p class="muted">Observa cómo se comportan tus ingresos y pérdidas.</p></div>
+            <article class="panel chart-panel"><div class="panel-heading"><div><p class="eyebrow">VISTA GENERAL</p><h2>Actividad registrada</h2></div><select id="periodSelect" aria-label="Periodo"><option value="all">Todo el tiempo</option><option value="week">Últimos 7 registros</option></select></div><div class="chart-area"><div class="chart-y"><span>$4k</span><span>$3k</span><span>$2k</span><span>$1k</span><span>$0</span></div><div class="bars" id="chartBars"><div class="empty-chart">Agrega movimientos para ver tu actividad.</div></div></div><div class="chart-legend"><span><i class="legend-income"></i> Ingresos</span><span><i class="legend-loss"></i> Pérdidas</span></div></article>
+          </section>
+
+          <section class="view" id="movimientos">
+            <div class="page-heading"><p class="eyebrow">REGISTRO</p><h1>Tus movimientos<span>.</span></h1><p class="muted">Agrega y consulta cada entrada o salida de dinero.</p></div>
+            <div class="movement-layout">
+              <article class="panel form-panel" id="nuevo"><div class="panel-heading"><div><p class="eyebrow">AÑADIR</p><h2>Nuevo movimiento</h2></div><span class="form-spark">✦</span></div><form id="movementForm"><div class="type-toggle"><label><input type="radio" name="type" value="income" checked /><span>Ingreso</span></label><label><input type="radio" name="type" value="loss" /><span>Pérdida</span></label></div><label class="field-label">Descripción<input name="description" type="text" placeholder="Ej. Venta de diseño" required maxlength="50" /></label><div class="form-row"><label class="field-label">Categoría<select name="category"><option>Trabajo</option><option>Ventas</option><option>Hogar</option><option>Transporte</option><option>Comida</option><option>Otros</option></select></label><label class="field-label">Fecha<input name="date" id="dateInput" type="date" required /></label></div><label class="field-label">Monto<input name="amount" type="number" min="0.01" step="0.01" placeholder="0.00" required /></label><button class="submit-btn" type="submit">Guardar movimiento <span>→</span></button></form></article>
+              <article class="panel transactions-panel"><div class="panel-heading transactions-heading"><div><p class="eyebrow">HISTORIAL</p><h2>Movimientos recientes</h2></div><div class="filter-group"><button class="filter-btn active" data-filter="all">Todos</button><button class="filter-btn" data-filter="income">Ingresos</button><button class="filter-btn" data-filter="loss">Pérdidas</button></div></div><div class="transactions-list" id="transactionsList"></div></article>
+            </div>
+          </section>
+          <footer class="footer-note"><span>Los datos se guardan solo en este dispositivo.</span><button id="clearBtn">Borrar todos los datos</button></footer>
+        </div>
+      </main>
+    </div>
+    <script src="JS/app.js"></script>
+  </body>
+</html>
