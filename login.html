@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#18201f" />
+    <title>Iniciar sesión | TrackFi</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="CSS/styles.css" />
+  </head>
+  <body class="login-page">
+    <main class="login-shell">
+      <section class="auth-card" role="dialog" aria-labelledby="authTitle">
+        <div class="auth-brand"><span class="brand-mark">T</span><span>TrackFi</span></div>
+        <p class="eyebrow">TU ESPACIO FINANCIERO</p>
+        <h1 id="authTitle">Inicia sesión</h1>
+        <p class="auth-copy">Guarda tu perfil en este dispositivo para personalizar tu experiencia.</p>
+        <p class="auth-error" id="loginError" role="alert" aria-live="polite"></p>
+        <form id="loginForm">
+          <label class="field-label">Tu nombre<input id="loginName" name="name" type="text" placeholder="Ej. Andrew" autocomplete="name" required maxlength="40" /></label>
+          <label class="field-label">Contraseña<span class="password-input-wrap"><input name="password" type="password" placeholder="Crea una contraseña" autocomplete="current-password" required minlength="4" /><button class="password-toggle" type="button" data-password-toggle aria-label="Mostrar contraseña"></button></span></label>
+          <button class="submit-btn" type="submit">Entrar a TrackFi <span>→</span></button>
+        </form>
+        <p class="auth-note">Los datos de acceso se guardan únicamente en este navegador.</p>
+      </section>
+    </main>
+    <script src="JS/auth.js"></script>
+  </body>
+</html>

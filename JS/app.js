@@ -1,7 +1,12 @@
 const STORAGE_KEY = 'clara-finance-movements';
 const PROFILE_KEY = 'trackfi-profile';
+const CREDENTIALS_KEY = 'trackfi-credentials';
 const THEME_KEY = 'trackfi-theme';
 const savedProfile = JSON.parse(localStorage.getItem(PROFILE_KEY) || 'null');
+let credentials = JSON.parse(localStorage.getItem(CREDENTIALS_KEY) || 'null');
+if (!savedProfile) {
+  window.location.replace('login.html');
+}
 const seed = [
   { id: 1, type: 'income', description: 'Proyecto de identidad visual', category: 'Trabajo', date: '2026-09-08', amount: 1250 },
   { id: 2, type: 'loss', description: 'Compra de materiales', category: 'Trabajo', date: '2026-09-06', amount: 180 },
@@ -88,31 +93,87 @@ document.querySelector('#themeToggle').addEventListener('click', () => {
   localStorage.setItem(THEME_KEY, nextTheme);
   applyTheme(nextTheme);
 });
-document.querySelector('#loginForm').addEventListener('submit', event => {
-  event.preventDefault();
-  const data = new FormData(event.currentTarget);
-  profile = { name: data.get('name').trim() };
-  localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
-  updateProfile();
-  document.querySelector('#authOverlay').classList.remove('visible');
-  document.querySelector('#authOverlay').setAttribute('aria-hidden', 'true');
-  document.body.classList.remove('auth-locked');
+document.querySelectorAll('[data-password-toggle]').forEach(toggle => {
+  toggle.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path class="eye-shape" d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"></path><circle cx="12" cy="12" r="3"></circle><path class="eye-slash" d="M3 3 21 21"></path></svg>';
 });
+document.querySelectorAll('[data-password-toggle]').forEach(toggle => toggle.addEventListener('click', () => {
+  const input = toggle.parentElement.querySelector('input');
+  const isVisible = input.type === 'text';
+  input.type = isVisible ? 'password' : 'text';
+  toggle.setAttribute('aria-label', isVisible ? 'Mostrar contraseña' : 'Ocultar contraseña');
+  toggle.classList.toggle('active', !isVisible);
+}));
 document.querySelector('#profileBtn').addEventListener('click', () => {
   const menu = document.querySelector('#profileMenu');
   const isOpen = menu.classList.toggle('visible');
   menu.setAttribute('aria-hidden', String(!isOpen));
+});
+function resetPasswordVisibility() {
+  document.querySelectorAll('[data-password-toggle]').forEach(toggle => {
+    const input = toggle.parentElement.querySelector('input');
+    input.type = 'password';
+    toggle.classList.remove('active');
+    toggle.setAttribute('aria-label', 'Mostrar contraseña');
+  });
+}
+
+function clearPasswordForm() {
+  document.querySelector('#passwordForm').reset();
+  document.querySelector('#passwordMessage').textContent = '';
+  document.querySelector('#passwordMessage').classList.remove('success');
+}
+
+document.addEventListener('click', event => {
+  const profileWrap = document.querySelector('.profile-menu-wrap');
+  const menu = document.querySelector('#profileMenu');
+  if (!profileWrap.contains(event.target) && menu.classList.contains('visible')) {
+    menu.classList.remove('visible');
+    menu.setAttribute('aria-hidden', 'true');
+    resetPasswordVisibility();
+    clearPasswordForm();
+  }
+});
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape') {
+    const menu = document.querySelector('#profileMenu');
+    menu.classList.remove('visible');
+    menu.setAttribute('aria-hidden', 'true');
+    resetPasswordVisibility();
+    clearPasswordForm();
+  }
+});
+document.querySelector('#changePasswordBtn').addEventListener('click', () => {
+  document.querySelector('#passwordForm').classList.toggle('visible');
+  document.querySelector('#passwordMessage').textContent = '';
+});
+document.querySelector('#passwordForm').addEventListener('submit', event => {
+  event.preventDefault();
+  const data = new FormData(event.currentTarget);
+  const message = document.querySelector('#passwordMessage');
+  const currentPassword = data.get('currentPassword');
+  const newPassword = data.get('newPassword');
+  if (!credentials || credentials.password !== currentPassword) {
+    message.textContent = 'La clave actual no es correcta.';
+    return;
+  }
+  if (newPassword !== data.get('confirmPassword')) {
+    message.textContent = 'Las nuevas claves no coinciden.';
+    return;
+  }
+  credentials.password = newPassword;
+  localStorage.setItem(CREDENTIALS_KEY, JSON.stringify(credentials));
+  message.classList.add('success');
+  message.textContent = 'Contraseña actualizada.';
+  event.currentTarget.reset();
 });
 document.querySelector('#logoutBtn').addEventListener('click', () => {
   localStorage.removeItem(PROFILE_KEY);
   profile = null;
   document.querySelector('#profileMenu').classList.remove('visible');
   document.querySelector('#profileMenu').setAttribute('aria-hidden', 'true');
-  document.querySelector('#loginForm').reset();
-  document.querySelector('#authOverlay').classList.add('visible');
-  document.querySelector('#authOverlay').setAttribute('aria-hidden', 'false');
-  document.body.classList.add('auth-locked');
-  document.querySelector('#loginName').focus();
+  resetPasswordVisibility();
+  clearPasswordForm();
+  window.location.href = 'login.html';
 });
 function setView() {
   const viewId = ['resumen', 'movimientos', 'analisis'].includes(window.location.hash.slice(1)) ? window.location.hash.slice(1) : 'resumen';
@@ -123,9 +184,4 @@ window.addEventListener('hashchange', setView);
 setView();
 applyTheme(savedTheme);
 updateProfile();
-if (!profile) {
-  document.querySelector('#authOverlay').classList.add('visible');
-  document.querySelector('#authOverlay').setAttribute('aria-hidden', 'false');
-  document.body.classList.add('auth-locked');
-}
 render();

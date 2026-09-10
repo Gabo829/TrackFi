@@ -253,12 +253,134 @@ button {
   font-size: 10px;
 }
 
+.change-password-btn {
+  width: 100%;
+  margin-top: 14px;
+  padding: 0;
+  background: transparent;
+  color: var(--teal-dark);
+  font-size: 11px;
+  font-weight: 600;
+  text-align: left;
+}
+
+.change-password-btn:hover {
+  color: var(--coral);
+}
+
+.password-form {
+  display: none;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.password-form.visible {
+  display: block;
+}
+
+.password-form input {
+  display: block;
+  width: 100%;
+  margin-bottom: 7px;
+  padding: 8px 9px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 10px;
+  outline: none;
+}
+
+.password-input-wrap {
+  position: relative;
+  display: block;
+}
+
+.password-input-wrap input {
+  padding-right: 34px;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  display: grid;
+  width: 22px;
+  height: 22px;
+  place-items: center;
+  padding: 0;
+  transform: translateY(-50%);
+  background: transparent;
+  color: var(--muted);
+  font-size: 0;
+  line-height: 1;
+}
+
+.password-toggle svg {
+  width: 19px;
+  height: 19px;
+  overflow: visible;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.password-toggle svg circle {
+  fill: currentColor;
+  stroke: none;
+}
+
+.password-toggle.active .eye-slash {
+  display: none;
+}
+
+.password-toggle:hover,
+.password-toggle.active {
+  color: var(--teal);
+}
+
+.auth-card .password-input-wrap {
+  margin-top: 6px;
+}
+
+.auth-card .password-input-wrap input {
+  margin-top: 0;
+}
+
+.password-form input:focus {
+  border-color: var(--teal);
+}
+
+.password-message {
+  min-height: 13px;
+  margin: 3px 0 7px;
+  color: var(--coral);
+  font-size: 9px;
+  line-height: 1.3;
+}
+
+.password-message.success {
+  color: var(--teal-dark);
+}
+
+.password-save-btn {
+  width: 100%;
+  padding: 8px 9px;
+  border-radius: 5px;
+  background: var(--teal-dark);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+}
+
 .logout-btn {
   width: 100%;
   margin-top: 14px;
-  padding: 9px 10px;
-  border-radius: 6px;
-  background: #f7e6e0;
+  padding: 0;
+  background: transparent;
   color: var(--coral);
   font-size: 11px;
   font-weight: 600;
@@ -266,7 +388,8 @@ button {
 }
 
 .logout-btn:hover {
-  background: #f1d8d0;
+  background: transparent;
+  color: #e18a76;
 }
 
 /* Encabezados y vistas */
@@ -990,6 +1113,13 @@ body.auth-locked .app-shell {
   margin: 0 0 24px;
 }
 
+.auth-error {
+  min-height: 16px;
+  margin: -10px 0 14px;
+  color: var(--coral);
+  font-size: 11px;
+}
+
 .auth-note {
   margin: 18px 0 0;
   font-size: 10px;
@@ -1199,4 +1329,65 @@ body.auth-locked .app-shell {
   .auth-brand {
     margin-bottom: 30px;
   }
+}
+
+/* Página independiente de inicio de sesión */
+.login-page {
+  position: relative;
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  overflow: hidden;
+  background-color: #e7eee9;
+  background-image: linear-gradient(128deg, rgba(40, 94, 88, 0.18) 0 18%, transparent 18% 100%), linear-gradient(310deg, rgba(201, 109, 89, 0.14) 0 13%, transparent 13% 100%), repeating-linear-gradient(120deg, rgba(255, 255, 255, 0.18) 0 1px, transparent 1px 34px);
+  background-position: center;
+  background-size: cover, cover, 34px 34px;
+}
+
+.login-page::before,
+.login-page::after {
+  position: absolute;
+  z-index: 0;
+  border: 1px solid rgba(40, 94, 88, 0.14);
+  content: '';
+  pointer-events: none;
+}
+
+.login-page::before {
+  top: -18vh;
+  left: -8vw;
+  width: 45vw;
+  height: 145vh;
+  transform: rotate(18deg);
+}
+
+.login-page::after {
+  right: -12vw;
+  bottom: -28vh;
+  width: 52vw;
+  height: 58vh;
+  transform: rotate(-13deg);
+  border-color: rgba(201, 109, 89, 0.16);
+}
+
+.login-shell {
+  position: relative;
+  z-index: 1;
+  width: min(100% - 40px, 390px);
+}
+
+.login-page .auth-card {
+  width: 100%;
+}
+
+.login-page .auth-card h1 {
+  margin: 0 0 10px;
+  color: var(--ink);
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 30px;
+}
+
+body.dark-theme.login-page {
+  background-color: #18201f;
+  background-image: linear-gradient(128deg, rgba(120, 170, 158, 0.16) 0 18%, transparent 18% 100%), linear-gradient(310deg, rgba(201, 109, 89, 0.13) 0 13%, transparent 13% 100%), repeating-linear-gradient(120deg, rgba(255, 255, 255, 0.04) 0 1px, transparent 1px 34px);
 }

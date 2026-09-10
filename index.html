@@ -28,7 +28,7 @@
       <main class="main-content">
         <header class="topbar">
           <div class="mobile-brand"><span class="brand-mark">T</span><span>TrackFi</span></div>
-          <div class="topbar-actions"><span class="current-date" id="todayLabel"></span><button class="theme-toggle" id="themeToggle" aria-label="Cambiar a modo oscuro" title="Cambiar tema">☾</button><div class="profile-menu-wrap"><button class="avatar" id="profileBtn" aria-label="Abrir perfil">G</button><div class="profile-menu" id="profileMenu" aria-hidden="true"><span class="profile-menu-name" id="profileMenuName">Gabriel</span><span class="profile-menu-label">Sesión local</span><button class="logout-btn" id="logoutBtn">Cerrar sesión</button></div></div></div>
+          <div class="topbar-actions"><span class="current-date" id="todayLabel"></span><button class="theme-toggle" id="themeToggle" aria-label="Cambiar a modo oscuro" title="Cambiar tema">☾</button><div class="profile-menu-wrap"><button class="avatar" id="profileBtn" aria-label="Abrir perfil">G</button><div class="profile-menu" id="profileMenu" aria-hidden="true"><span class="profile-menu-name" id="profileMenuName">Gabriel</span><span class="profile-menu-label">Sesión local</span><button class="change-password-btn" id="changePasswordBtn">Cambiar contraseña</button><form class="password-form" id="passwordForm"><span class="password-input-wrap"><input name="currentPassword" type="password" placeholder="Clave actual" required /><button class="password-toggle" type="button" data-password-toggle aria-label="Mostrar contraseña"></button></span><span class="password-input-wrap"><input name="newPassword" type="password" placeholder="Nueva clave" minlength="4" required /><button class="password-toggle" type="button" data-password-toggle aria-label="Mostrar contraseña"></button></span><span class="password-input-wrap"><input name="confirmPassword" type="password" placeholder="Repite la nueva clave" minlength="4" required /><button class="password-toggle" type="button" data-password-toggle aria-label="Mostrar contraseña"></button></span><p class="password-message" id="passwordMessage" role="alert"></p><button class="password-save-btn" type="submit">Guardar nueva clave</button></form><button class="logout-btn" id="logoutBtn">Cerrar sesión</button></div></div></div>
         </header>
 
         <div class="content-wrap">
@@ -64,20 +64,6 @@
           <footer class="footer-note"><span>Los datos se guardan solo en este dispositivo.</span><button id="clearBtn">Borrar todos los datos</button></footer>
         </div>
       </main>
-    </div>
-    <div class="auth-overlay" id="authOverlay" aria-hidden="true">
-      <section class="auth-card" role="dialog" aria-modal="true" aria-labelledby="authTitle">
-        <div class="auth-brand"><span class="brand-mark">T</span><span>TrackFi</span></div>
-        <p class="eyebrow">TU ESPACIO FINANCIERO</p>
-        <h2 id="authTitle">Inicia sesión</h2>
-        <p class="auth-copy">Guarda tu perfil en este dispositivo para personalizar tu experiencia.</p>
-        <form id="loginForm">
-          <label class="field-label">Tu nombre<input id="loginName" name="name" type="text" placeholder="Ej. Gabriel" autocomplete="name" required maxlength="40" /></label>
-          <label class="field-label">Contraseña<input name="password" type="password" placeholder="Crea una contraseña" autocomplete="current-password" required minlength="4" /></label>
-          <button class="submit-btn" type="submit">Entrar a TrackFi <span>→</span></button>
-        </form>
-        <p class="auth-note">Los datos de acceso se guardan únicamente en este navegador.</p>
-      </section>
     </div>
     <script src="JS/app.js"></script>
   </body>
