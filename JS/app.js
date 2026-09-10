@@ -1,4 +1,7 @@
 const STORAGE_KEY = 'clara-finance-movements';
+const PROFILE_KEY = 'trackfi-profile';
+const THEME_KEY = 'trackfi-theme';
+const savedProfile = JSON.parse(localStorage.getItem(PROFILE_KEY) || 'null');
 const seed = [
   { id: 1, type: 'income', description: 'Proyecto de identidad visual', category: 'Trabajo', date: '2026-09-08', amount: 1250 },
   { id: 2, type: 'loss', description: 'Compra de materiales', category: 'Trabajo', date: '2026-09-06', amount: 180 },
@@ -6,10 +9,29 @@ const seed = [
 ];
 let movements = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null') || seed;
 let currentFilter = 'all';
+let profile = savedProfile;
+const savedTheme = localStorage.getItem(THEME_KEY) || 'light';
 
 const money = value => new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 }).format(value).replace('US$', '$');
 const formatDate = date => new Intl.DateTimeFormat('es', { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(`${date}T12:00:00`));
 const save = () => localStorage.setItem(STORAGE_KEY, JSON.stringify(movements));
+
+function applyTheme(theme) {
+  const isDark = theme === 'dark';
+  document.body.classList.toggle('dark-theme', isDark);
+  const toggle = document.querySelector('#themeToggle');
+  toggle.textContent = isDark ? '☀' : '☾';
+  toggle.setAttribute('aria-label', isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro');
+  toggle.setAttribute('title', isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro');
+}
+
+function updateProfile() {
+  const name = profile?.name || 'Gabriel';
+  document.querySelector('#userName').textContent = name;
+  document.querySelector('#profileBtn').textContent = name.charAt(0).toUpperCase();
+  document.querySelector('#profileBtn').setAttribute('aria-label', `Perfil de ${name}`);
+  document.querySelector('#profileMenuName').textContent = name;
+}
 
 function render() {
   const income = movements.filter(item => item.type === 'income').reduce((sum, item) => sum + Number(item.amount), 0);
@@ -61,6 +83,37 @@ document.querySelector('#dateInput').value = new Date().toISOString().slice(0, 1
 document.querySelector('#todayLabel').textContent = new Intl.DateTimeFormat('es', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date());
 document.querySelector('#clearBtn').addEventListener('click', () => { if (confirm('¿Borrar todos los movimientos?')) { movements = []; save(); render(); } });
 document.querySelector('#exportBtn').addEventListener('click', () => { const blob = new Blob([JSON.stringify(movements, null, 2)], { type: 'application/json' }); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'trackfi-movimientos.json'; link.click(); URL.revokeObjectURL(link.href); });
+document.querySelector('#themeToggle').addEventListener('click', () => {
+  const nextTheme = document.body.classList.contains('dark-theme') ? 'light' : 'dark';
+  localStorage.setItem(THEME_KEY, nextTheme);
+  applyTheme(nextTheme);
+});
+document.querySelector('#loginForm').addEventListener('submit', event => {
+  event.preventDefault();
+  const data = new FormData(event.currentTarget);
+  profile = { name: data.get('name').trim() };
+  localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+  updateProfile();
+  document.querySelector('#authOverlay').classList.remove('visible');
+  document.querySelector('#authOverlay').setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('auth-locked');
+});
+document.querySelector('#profileBtn').addEventListener('click', () => {
+  const menu = document.querySelector('#profileMenu');
+  const isOpen = menu.classList.toggle('visible');
+  menu.setAttribute('aria-hidden', String(!isOpen));
+});
+document.querySelector('#logoutBtn').addEventListener('click', () => {
+  localStorage.removeItem(PROFILE_KEY);
+  profile = null;
+  document.querySelector('#profileMenu').classList.remove('visible');
+  document.querySelector('#profileMenu').setAttribute('aria-hidden', 'true');
+  document.querySelector('#loginForm').reset();
+  document.querySelector('#authOverlay').classList.add('visible');
+  document.querySelector('#authOverlay').setAttribute('aria-hidden', 'false');
+  document.body.classList.add('auth-locked');
+  document.querySelector('#loginName').focus();
+});
 function setView() {
   const viewId = ['resumen', 'movimientos', 'analisis'].includes(window.location.hash.slice(1)) ? window.location.hash.slice(1) : 'resumen';
   document.querySelectorAll('.view').forEach(view => view.classList.toggle('active', view.id === viewId));
@@ -68,4 +121,11 @@ function setView() {
 }
 window.addEventListener('hashchange', setView);
 setView();
+applyTheme(savedTheme);
+updateProfile();
+if (!profile) {
+  document.querySelector('#authOverlay').classList.add('visible');
+  document.querySelector('#authOverlay').setAttribute('aria-hidden', 'false');
+  document.body.classList.add('auth-locked');
+}
 render();
