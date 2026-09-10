@@ -7,12 +7,7 @@ let credentials = JSON.parse(localStorage.getItem(CREDENTIALS_KEY) || 'null');
 if (!savedProfile) {
   window.location.replace('login.html');
 }
-const seed = [
-  { id: 1, type: 'income', description: 'Proyecto de identidad visual', category: 'Trabajo', date: '2026-09-08', amount: 1250 },
-  { id: 2, type: 'loss', description: 'Compra de materiales', category: 'Trabajo', date: '2026-09-06', amount: 180 },
-  { id: 3, type: 'income', description: 'Venta de paquete digital', category: 'Ventas', date: '2026-09-02', amount: 420 }
-];
-let movements = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null') || seed;
+let movements = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null') || [];
 let currentFilter = 'all';
 let profile = savedProfile;
 const savedTheme = localStorage.getItem(THEME_KEY) || 'light';
