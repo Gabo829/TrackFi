@@ -42,10 +42,10 @@ function render() {
   document.querySelector('#balanceNote').textContent = income - loss >= 0 ? 'Vas por buen camino' : 'Revisa tus salidas';
   const available = income ? Math.max(0, Math.round(((income - loss) / income) * 100)) : 0;
   const latest = [...movements].sort((a, b) => new Date(b.date) - new Date(a.date))[0];
-  document.querySelector('#summaryMessage').textContent = income - loss >= 0 ? 'Tu balance está creciendo.' : 'Tus pérdidas superan tus ingresos.';
+  document.querySelector('#summaryMessage').textContent = income - loss >= 0 ? 'Tu balance está creciendo.' : 'Tus egresos superan tus ingresos.';
   document.querySelector('#summaryDetail').textContent = movements.length ? `${movements.length} movimiento${movements.length === 1 ? '' : 's'} registrado${movements.length === 1 ? '' : 's'} hasta ahora.` : 'Cada movimiento cuenta para tener una visión más clara.';
   document.querySelector('#lastMovement').textContent = latest ? latest.description : 'Sin movimientos';
-  document.querySelector('#lastMovementDetail').textContent = latest ? `${latest.type === 'income' ? 'Ingreso' : 'Pérdida'} de ${money(latest.amount)} · ${formatDate(latest.date)}` : 'Añade tu primer registro para verlo aquí.';
+  document.querySelector('#lastMovementDetail').textContent = latest ? `${latest.type === 'income' ? 'Ingreso' : 'Egreso'} de ${money(latest.amount)} · ${formatDate(latest.date)}` : 'Añade tu primer registro para verlo aquí.';
   document.querySelector('#availablePercent').textContent = `${available}%`;
   document.querySelector('#availableProgress').style.width = `${available}%`;
   renderTransactions();
@@ -62,10 +62,33 @@ function renderTransactions() {
 
 function renderChart() {
   const chart = document.querySelector('#chartBars');
-  const selected = document.querySelector('#periodSelect').value === 'week' ? [...movements].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 7) : movements;
-  const max = Math.max(...selected.map(item => Number(item.amount)), 1);
-  if (!selected.length) { chart.innerHTML = '<div class="empty-chart">Agrega movimientos para ver tu actividad.</div>'; return; }
-  chart.innerHTML = selected.reverse().map(item => `<div class="bar-group" title="${escapeHtml(item.description)}: ${money(item.amount)}"><div class="bar ${item.type}" style="height:${Math.max(5, (item.amount / max) * 92)}%"></div></div>`).join('');
+  const scale = document.querySelector('#chartScale');
+  const period = document.querySelector('#periodSelect').value;
+  const startDate = document.querySelector('#analysisStartDate').value;
+  const endDate = document.querySelector('#analysisEndDate').value;
+  const currentYear = new Date().getFullYear();
+  let selected = period === 'week' ? [...movements].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 7) : movements;
+  if (startDate || endDate) {
+    selected = movements.filter(item => (!startDate || item.date >= startDate) && (!endDate || item.date <= endDate));
+  } else if (period === 'all') {
+    selected = movements.filter(item => new Date(`${item.date}T12:00:00`).getFullYear() === currentYear);
+  }
+  const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+  const monthly = months.map((month, index) => ({
+    month,
+    index,
+    income: selected.filter(item => new Date(`${item.date}T12:00:00`).getMonth() === index && item.type === 'income').reduce((sum, item) => sum + Number(item.amount), 0),
+    loss: selected.filter(item => new Date(`${item.date}T12:00:00`).getMonth() === index && item.type === 'loss').reduce((sum, item) => sum + Number(item.amount), 0)
+  }));
+  const highestAmount = Math.max(...monthly.flatMap(item => [item.income, item.loss]), 1);
+  const rawStep = highestAmount / 4;
+  const magnitude = 10 ** Math.floor(Math.log10(rawStep));
+  const normalizedStep = rawStep / magnitude;
+  const step = (normalizedStep <= 1 ? 1 : normalizedStep <= 2 ? 2 : normalizedStep <= 5 ? 5 : 10) * magnitude;
+  const max = step * 4;
+  scale.innerHTML = [4, 3, 2, 1, 0].map(level => `<span>${money(max * level / 4).replace(/,00$/, '')}</span>`).join('');
+  chart.innerHTML = monthly.map(item => `<div class="month-group" title="${item.month}: ingresos ${money(item.income)}, egresos ${money(item.loss)}"><div class="month-bars"><div class="bar income" style="height:${item.income ? Math.max(5, (item.income / max) * 100) : 0}%"></div><div class="bar loss" style="height:${item.loss ? Math.max(5, (item.loss / max) * 100) : 0}%"></div></div></div>`).join('');
+  document.querySelector('#chartMonths').innerHTML = monthly.map(item => `<span class="month-label">${item.month}</span>`).join('');
 }
 
 function escapeHtml(value) { const div = document.createElement('div'); div.textContent = value; return div.innerHTML; }
@@ -78,7 +101,26 @@ document.querySelector('#movementForm').addEventListener('submit', event => {
 });
 
 document.querySelectorAll('.filter-btn').forEach(button => button.addEventListener('click', () => { currentFilter = button.dataset.filter; document.querySelectorAll('.filter-btn').forEach(item => item.classList.toggle('active', item === button)); renderTransactions(); }));
-document.querySelector('#periodSelect').addEventListener('change', renderChart);
+document.querySelector('#periodSelect').addEventListener('change', () => {
+  document.querySelector('#analysisStartDate').value = '';
+  document.querySelector('#analysisEndDate').value = '';
+  document.querySelector('#analysisMessage').textContent = '';
+  renderChart();
+});
+document.querySelector('#applyAnalysisDates').addEventListener('click', () => {
+  const startDate = document.querySelector('#analysisStartDate').value;
+  const endDate = document.querySelector('#analysisEndDate').value;
+  const message = document.querySelector('#analysisMessage');
+  if (startDate && endDate && startDate > endDate) {
+    message.textContent = 'La fecha inicial debe ser anterior a la fecha final.';
+    message.classList.add('error');
+    return;
+  }
+  message.textContent = startDate || endDate ? 'Mostrando el rango seleccionado.' : '';
+  message.classList.remove('error');
+  document.querySelector('#periodSelect').value = 'all';
+  renderChart();
+});
 document.querySelector('#dateInput').value = new Date().toISOString().slice(0, 10);
 document.querySelector('#todayLabel').textContent = new Intl.DateTimeFormat('es', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date());
 document.querySelector('#clearBtn').addEventListener('click', () => { if (confirm('¿Borrar todos los movimientos?')) { movements = []; save(); render(); } });
